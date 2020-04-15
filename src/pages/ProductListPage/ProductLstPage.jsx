@@ -13,11 +13,49 @@ class ProductLstPage extends Component {
     };
   }
 
+  findIndex = (arr, id) => {
+    let result = -1;
+    arr.forEach((element, index) => {
+      if (element.id === id) {
+        result = index;
+      }
+    });
+    return result;
+  };
+  onDelete = (id) => {
+    console.log(id);
+    let { products } = this.state;
+    callApi(`products/${id}`, "DELETE", null).then((res) => {
+      if (res.status === 200) {
+        // C1
+        // this.setState({ products: products.filter((item) => item.id !== id) });
+        let newProducts = [...products];
+        let index = this.findIndex(newProducts, id);
+        if (index !== -1) {
+          //C2
+          //chỗ setTodoList bạn làm chưa đúng nè. Hàm Splice nó sẽ trả về cái mảng chứa các phần tử bị remove,
+          //  chứ hk phải là mảng hiện tại sau khi remove nhé.
+          newProducts.splice(index, 1);
+          this.setState({
+            products: newProducts,
+          });
+        }
+      }
+    });
+  };
+
   showProductItem = (data) => {
     let result = null;
     if (data.length > 0) {
       result = data.map((item, i) => {
-        return <ProductItem key={i} products={item} index={i} />;
+        return (
+          <ProductItem
+            key={i}
+            products={item}
+            index={i}
+            onDelete={this.onDelete}
+          />
+        );
       });
     }
     return result;
@@ -25,12 +63,12 @@ class ProductLstPage extends Component {
 
   componentDidMount() {
     callApi("products", "GET", null).then((res) => {
-      console.log(res.data);
       this.setState({
         products: res.data,
       });
     });
   }
+
   render() {
     let { products } = this.state;
 
