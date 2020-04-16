@@ -1,28 +1,44 @@
-const initState = [
-  {
-    id: 1,
-    name: "Iphone 1",
-    price: 110,
-    status: true,
-  },
-  {
-    id: 2,
-    name: "Iphone 2",
-    price: 120,
-    status: true,
-  },
-  {
-    id: 3,
-    name: "Iphone 3",
-    price: 130,
-    status: true,
-  },
-];
+import {
+  FETCH_PRODUCTS,
+  DELETE_PRODUCTS,
+  ADD_PRODUCTS,
+  UDATE_PRODUCTS,
+} from "../constant/types";
 
+const initState = [];
+let findIndex = (arr, id) => {
+  let result = -1;
+  arr.forEach((element, index) => {
+    if (element.id === id) {
+      result = index;
+    }
+  });
+  return result;
+};
 const productReducer = (state = initState, action) => {
+  let index = -1;
+  let { products } = action;
   switch (action.type) {
+    case FETCH_PRODUCTS: {
+      state = action.products;
+      return [...state];
+    }
+    case DELETE_PRODUCTS: {
+      index = findIndex(state, action.id);
+      state.splice(index, 1);
+      return [...state];
+    }
+    case ADD_PRODUCTS: {
+      state.push(action.products);
+      return [...state];
+    }
+    case UDATE_PRODUCTS: {
+      index = findIndex(state, products.id);
+      state[index] = products;
+      return [...state];
+    }
     default:
-      return state;
+      return [...state];
   }
 };
 
